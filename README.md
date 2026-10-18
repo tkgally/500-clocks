@@ -1,5 +1,7 @@
 # Five Hundred Clocks
 
+*The following was written by Claude Opus 5.5 on October 18, 2026.*
+
 A gallery of 500 animated clocks, each showing the current time in a different way: number systems, languages, historical instruments, machines, games, crafts, natural phenomena, cellular automata and mathematical constructions. Hovering over a clock shows its name and a one-line description; clicking it opens a larger view with notes on how to read it and how it works.
 
 The whole gallery is one self-contained HTML file. It uses no external libraries, fonts, images or network requests, and it runs when opened directly from disk.
