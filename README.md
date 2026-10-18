@@ -10,7 +10,7 @@ The whole gallery is one self-contained HTML file. It uses no external libraries
 
 ## Using the page
 
-Open `index.html` (the same file as `five-hundred-clocks.html`) in a current desktop or mobile browser.
+Open [index.html](https://tkgally.github.io/500-clocks/) (the same file as `five-hundred-clocks.html`) in a current desktop or mobile browser.
 
 - The clocks appear in a different random order on each load.
 - The toolbar at the top has a grid-size slider, a category menu, a search box (press `/` to jump to it), pause (also the space bar), a speed control (1× to 3600×), a slider that shifts the time up to twelve hours either way, and a “Now” button that returns to the present.
