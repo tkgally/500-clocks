@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three Clocks</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .panel {
+    flex: 1 1 33.333%;
+    min-width: 300px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1.5rem;
+  }
+
+  .label {
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  /* ---------- 1. Analog clock: cream & walnut ---------- */
+  .analog {
+    background: radial-gradient(circle at 50% 30%, #fbf5e6, #e8dcc0);
+    color: #3b2a1a;
+  }
+  .analog .face {
+    width: min(70vw, 340px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #fffdf7;
+    border: 14px solid #6b4a2b;
+    box-shadow: inset 0 0 0 4px #c9a878, 0 20px 40px rgba(59, 42, 26, 0.35);
+    position: relative;
+  }
+  .analog .tick-wrap {
+    position: absolute;
+    inset: 0;
+  }
+  .analog .tick {
+    position: absolute;
+    left: 50%;
+    top: 2%;
+    width: 3px;
+    height: 4%;
+    transform: translateX(-50%);
+    background: #6b4a2b;
+  }
+  .analog .tick.major {
+    width: 6px;
+    height: 9%;
+    background: #3b2a1a;
+  }
+  .analog .hand {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    transform-origin: 50% 100%;
+    border-radius: 4px;
+    transform: translateX(-50%);
+  }
+  .analog .hour { width: 8px; height: 26%; background: #3b2a1a; }
+  .analog .minute { width: 5px; height: 38%; background: #3b2a1a; }
+  .analog .second { width: 2px; height: 42%; background: #b5452b; }
+  .analog .pivot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #b5452b;
+    transform: translate(-50%, -50%);
+  }
+  .analog .digital-date {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 1.1rem;
+  }
+
+  /* ---------- 2. Neon digital clock: dark & cyan glow ---------- */
+  .neon {
+    background: #05070d;
+    color: #6ef7ff;
+  }
+  .neon .time {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-shadow:
+      0 0 6px #6ef7ff,
+      0 0 18px #1fb6d6,
+      0 0 40px #0a7fa0;
+  }
+  .neon .colon {
+    animation: blink 1s steps(2, start) infinite;
+  }
+  .neon .ampm {
+    font-size: 0.4em;
+    vertical-align: super;
+    margin-left: 0.3em;
+    color: #ff6ec7;
+    text-shadow: 0 0 8px #ff6ec7;
+  }
+  .neon .ms {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 1.1rem;
+    color: #ff6ec7;
+    text-shadow: 0 0 8px #ff6ec7;
+  }
+  .neon .bar {
+    width: min(80%, 360px);
+    height: 4px;
+    background: #12202a;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .neon .bar span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #1fb6d6, #6ef7ff);
+    box-shadow: 0 0 10px #6ef7ff;
+  }
+  @keyframes blink {
+    to { visibility: hidden; }
+  }
+
+  /* ---------- 3. Flip clock: slate & amber ---------- */
+  .flip {
+    background: linear-gradient(160deg, #2b2f3a, #14161d);
+    color: #ffb347;
+  }
+  .flip .row {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .flip .card {
+    position: relative;
+    width: clamp(48px, 9vw, 80px);
+    height: clamp(72px, 13vw, 116px);
+    background: #1f222b;
+    border-radius: 8px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flip .card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: #000;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .flip .card span {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.25s ease;
+  }
+  .flip .card.flipping span {
+    animation: flip 0.35s ease;
+  }
+  @keyframes flip {
+    0% { transform: rotateX(0deg); }
+    50% { transform: rotateX(-90deg); }
+    100% { transform: rotateX(0deg); }
+  }
+  .flip .sep {
+    font-size: clamp(2rem, 6vw, 4rem);
+    line-height: 1;
+    align-self: center;
+    color: #ffb347;
+    opacity: 0.8;
+  }
+  .flip .weekday {
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #ffb347;
+    opacity: 0.85;
+  }
+
+  @media (max-width: 899px) {
+    .panel { min-height: 60vh; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 1. Analog clock -->
+  <section class="panel analog">
+    <div class="label">Analog</div>
+    <div class="face" id="analogFace">
+      <div class="hand hour" id="hHand"></div>
+      <div class="hand minute" id="mHand"></div>
+      <div class="hand second" id="sHand"></div>
+      <div class="pivot"></div>
+    </div>
+    <div class="digital-date" id="analogDate"></div>
+  </section>
+
+  <!-- 2. Neon digital clock -->
+  <section class="panel neon">
+    <div class="label">Neon Digital</div>
+    <div class="time" id="neonTime"></div>
+    <div class="ms" id="neonMs"></div>
+    <div class="bar"><span id="neonBar"></span></div>
+  </section>
+
+  <!-- 3. Flip clock -->
+  <section class="panel flip">
+    <div class="label">Flip</div>
+    <div class="row" id="flipRow"></div>
+    <div class="weekday" id="flipWeekday"></div>
+  </section>
+
+<script>
+  // ---------- Analog: build tick marks ----------
+  const face = document.getElementById("analogFace");
+  for (let i = 0; i < 60; i++) {
+    const wrap = document.createElement("div");
+    wrap.className = "tick-wrap";
+    wrap.style.transform = `rotate(${i * 6}deg)`;
+    const t = document.createElement("div");
+    t.className = "tick" + (i % 5 === 0 ? " major" : "");
+    wrap.appendChild(t);
+    face.insertBefore(wrap, face.firstChild);
+  }
+
+  const hHand = document.getElementById("hHand");
+  const mHand = document.getElementById("mHand");
+  const sHand = document.getElementById("sHand");
+  const analogDate = document.getElementById("analogDate");
+
+  // ---------- Neon digital ----------
+  const neonTime = document.getElementById("neonTime");
+  const neonMs = document.getElementById("neonMs");
+  const neonBar = document.getElementById("neonBar");
+
+  // ---------- Flip ----------
+  const flipRow = document.getElementById("flipRow");
+  const flipWeekday = document.getElementById("flipWeekday");
+  const WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const flipCards = [];
+  function makeCard() {
+    const c = document.createElement("div");
+    c.className = "card";
+    const s = document.createElement("span");
+    c.appendChild(s);
+    return { el: c, span: s, value: null };
+  }
+  function addSep() {
+    const s = document.createElement("div");
+    s.className = "sep";
+    s.textContent = ":";
+    flipRow.appendChild(s);
+  }
+  for (let i = 0; i < 6; i++) {
+    if (i === 2 || i === 4) addSep();
+    const card = makeCard();
+    flipRow.appendChild(card.el);
+    flipCards.push(card);
+  }
+
+  function setFlip(card, text) {
+    if (card.value === text) return;
+    card.value = text;
+    card.span.textContent = text;
+    card.el.classList.remove("flipping");
+    void card.el.offsetWidth; // restart animation
+    card.el.classList.add("flipping");
+  }
+
+  const pad = (n, w = 2) => String(n).padStart(w, "0");
+
+  function tick() {
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    const ms = now.getMilliseconds();
+
+    // Analog hands (smooth sweep)
+    const secFrac = s + ms / 1000;
+    const minFrac = m + secFrac / 60;
+    const hourFrac = (h % 12) + minFrac / 60;
+    sHand.style.transform = `translateX(-50%) rotate(${secFrac * 6}deg)`;
+    mHand.style.transform = `translateX(-50%) rotate(${minFrac * 6}deg)`;
+    hHand.style.transform = `translateX(-50%) rotate(${hourFrac * 30}deg)`;
+    analogDate.textContent = now.toLocaleDateString("ja-JP", {
+      year: "numeric", month: "long", day: "numeric", weekday: "short"
+    });
+
+    // Neon digital
+    const hour12 = h % 12 === 0 ? 12 : h % 12;
+    const ampm = h < 12 ? "AM" : "PM";
+    neonTime.innerHTML =
+      `${pad(hour12)}<span class="colon">:</span>${pad(m)}<span class="colon">:</span>${pad(s)}<span class="ampm">${ampm}</span>`;
+    neonMs.textContent = "." + pad(ms, 3);
+    neonBar.style.width = (secFrac / 60 * 100).toFixed(2) + "%";
+
+    // Flip (24-hour)
+    const digits = (pad(h) + pad(m) + pad(s)).split("");
+    flipCards.forEach((card, i) => setFlip(card, digits[i]));
+    flipWeekday.textContent = WEEKDAYS[now.getDay()];
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>
